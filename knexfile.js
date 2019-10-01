@@ -5,40 +5,58 @@ module.exports = {
   development: {
     client: 'sqlite3',
     connection: {
-      filename: './dev.sqlite3'
-    }
-  },
-
-  staging: {
-    client: 'postgresql',
-    connection: {
-      database: 'my_db',
-      user:     'username',
-      password: 'password'
+      filename: './db/g2supply.db3'
+    },
+    useNullAsDefault: true,
+    migrations: {
+      directory: './db/migrations/'
+    },
+    seeds: {
+      directory: './db/seeds/'
     },
     pool: {
-      min: 2,
-      max: 10
-    },
-    migrations: {
-      tableName: 'knex_migrations'
+      afterCreate: (conn, done) => {
+        // runs after a connection is made to the sqlite engine
+        conn.run('PRAGMA foreign_keys = ON', done); // turn on FK enforcement
+      },
     }
   },
 
   production: {
-    client: 'postgresql',
-    connection: {
-      database: 'my_db',
-      user:     'username',
-      password: 'password'
-    },
-    pool: {
-      min: 2,
-      max: 10
-    },
+    client: 'pg',
+    connection: process.env.DATABASE_URL,
     migrations: {
-      tableName: 'knex_migrations'
-    }
-  }
+      directory: './db/migrations'
+    },
+    seeds: {
+      directory: './db/seeds'
+    },
+    useNullAsDefault: true,
+    // pool: {
+    //   afterCreate: (conn, done) => {
+    //     // runs after a connection is made to the sqlite engine
+    //     conn.run('PRAGMA foreign_keys = ON', done); // turn on FK enforcement
+    //   },
+    // }
+  }, 
 
-};
+  // testing: {
+  //   client: 'sqlite3',
+  //   connection: {
+  //     filename: './test-db/test-essentialism.db3'
+  //   },
+  //   migrations: {
+  //     directory: './test-db/'
+  //   },
+  //   seeds: {
+  //     directory: './test-db/'
+  //   },
+  //   useNullAsDefault: true,
+  //   pool: {
+  //     afterCreate: (conn, done) => {
+  //     // runs after a connection is made to the sqlite engine
+  //     conn.run('PRAGMA foreign_keys = ON', done); // turn on FK enforcement
+  //     }
+  //   }
+  // }
+}
